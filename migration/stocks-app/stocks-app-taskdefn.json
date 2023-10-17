@@ -1,0 +1,53 @@
+{
+    "family": "ecs-demo-Stocks-App",
+    "containerDefinitions": [
+        {
+            "name": "stocksapp",
+            "image": "$ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/stocks-app",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [
+                {
+                    "name": "stocksapp",
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "REACT_APP_APIHOSTPORT",
+                    "value": "$ALB_DNS"
+                },
+                {
+                    "name": "NGINX_DNS_RESOLVER",
+                    "value": "10.0.0.2"
+                },
+                {
+                    "name": "NGINX_APP_APIHOSTPORT",
+                    "value": "api.cloudacademy.terraform.local:8080"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "stocks-app-logs",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "ecs-demo"
+                }
+            }
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::$ACCOUNT_ID:role/cloudacademy-ecs-exec-task-role",
+    "executionRoleArn": "arn:aws:iam::$ACCOUNT_ID:role/cloudacademy-ecs-task-execution-role",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+}

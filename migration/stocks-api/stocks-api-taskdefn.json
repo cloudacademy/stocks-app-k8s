@@ -1,0 +1,54 @@
+{
+    "family": "ecs-demo-Stocks-API",
+    "containerDefinitions": [
+        {
+            "name": "stocksapi",
+            "image": "$ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/stocks-api",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [
+                {
+                    "name": "stocksapi",
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "DB_CONNSTR",
+                    "value": "jdbc:mysql://$DB_ENDPOINT:3306/cloudacademy"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "DB_USER",
+                    "valueFrom": "$SECRET_ARN:username::"
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "valueFrom": "$SECRET_ARN:password::"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "stocks-api-logs",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "ecs-demo"
+                }
+            }
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::$ACCOUNT_ID:role/cloudacademy-ecs-exec-task-role",
+    "executionRoleArn": "arn:aws:iam::$ACCOUNT_ID:role/cloudacademy-ecs-task-execution-role",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+}

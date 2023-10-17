@@ -1,0 +1,29 @@
+server {
+  listen 8080;
+  set $target ${NGINX_APP_APIHOSTPORT};
+
+  add_header Cache-Control no-cache;
+
+  location / {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html;
+    expires -1;
+  }
+
+  location /api/stocks/csv {
+    resolver         ${NGINX_DNS_RESOLVER} valid=300s;
+    resolver_timeout 10s;
+
+    proxy_pass http://$target;
+  }
+
+  location /ok {
+    return 200 'OK!';
+  }
+
+  error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+    root   /usr/share/nginx/html;
+  }
+}
